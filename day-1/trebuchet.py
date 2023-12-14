@@ -1,3 +1,6 @@
+import util.reader as reader
+
+
 def calculate_sum(lines):
     sum = 0
     for line in lines:
@@ -36,9 +39,6 @@ def to_int(str_int):
 
 
 if __name__ == "__main__":
-    with open("./resources/input.txt", "r") as input_file:
-        lines = input_file.readlines()
-
-    sum = calculate_sum(lines)
+    sum = calculate_sum(reader.read("resources/input.txt"))
     print(sum)
     assert sum == 54927
