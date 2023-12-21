@@ -63,7 +63,7 @@ def calc_value_for_line_with_words(line):
     second = None
     line = line.replace("\n", "")
 
-    curr_word = None
+    curr_words = []
     letter_index = 0
     word = ""
 
@@ -72,28 +72,35 @@ def calc_value_for_line_with_words(line):
 
         found_word = False
         if not char_as_int:
-            if curr_word:
-                char_matches = char == curr_word[letter_index]
-                if char_matches:
-                    word = word + char
-                    if len(curr_word) == letter_index + 1:
-                        found_word = True
+            if len(curr_words) > 0:
+                tmpIdx = letter_index
+                for curr_word in curr_words[:]:
+                    char_matches = char == curr_word[tmpIdx]
+                    if char_matches:
+                        word = word + char
+                        if len(curr_word) == tmpIdx + 1:
+                            found_word = True
+                        else:
+                            letter_index = tmpIdx + 1
                     else:
-                        letter_index = letter_index + 1
-                else:
-                    curr_word = None
-                    letter_index = 0
-                    word = ""
+                        curr_words.remove(curr_word)
+                        if len(curr_words) == 0:
+                            letter_index = 0
+                            word = ""
             else:
+                is_start_of_match = False
                 for word_itr in words:
                     if char == word_itr[0]:
-                        curr_word = word_itr
-                        letter_index = letter_index + 1
-                        word = word_itr[0]
+                        curr_words.append(word_itr)
+                        is_start_of_match = True
+
+                if is_start_of_match:
+                    letter_index = 1
+                    word = curr_words[0][0]
 
         if found_word:
-            char = int_map[curr_word]
-            curr_word = None
+            char = int_map[curr_words[0]]
+            curr_words = []
             letter_index = 0
             word = ""
 
@@ -120,4 +127,4 @@ if __name__ == "__main__":
     print(sum)
     print(sum_with_words)
     assert sum == 54927
-    assert sum_with_words == 54927
+    assert sum_with_words == 54477
