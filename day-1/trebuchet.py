@@ -12,18 +12,6 @@ int_map = {
     'nine': '9'
 }
 
-words = [
-    'one',
-    'two',
-    'three',
-    'four',
-    'five',
-    'six',
-    'seven',
-    'eight',
-    'nine'
-]
-
 
 def calculate_sum(lines, parse_char_words=False):
     sum = 0
@@ -63,8 +51,10 @@ def calc_value_for_line_with_words(line):
     second = None
     line = line.replace("\n", "")
 
-    curr_words = []
-    letter_index = 0
+    word_search_indices = {}
+    for key in int_map.keys():
+        word_search_indices[key] = 0
+
     word = ""
 
     for char in line:
@@ -72,37 +62,24 @@ def calc_value_for_line_with_words(line):
 
         found_word = False
         if not char_as_int:
-            if len(curr_words) > 0:
-                tmpIdx = letter_index
-                for curr_word in curr_words[:]:
-                    char_matches = char == curr_word[tmpIdx]
-                    if char_matches:
-                        word = word + char
-                        if len(curr_word) == tmpIdx + 1:
-                            found_word = True
-                        else:
-                            letter_index = tmpIdx + 1
+            for curr_word, curr_word_idx in word_search_indices.items():
+                char_matches = char == curr_word[curr_word_idx]
+                if char_matches:
+                    if curr_word_idx + 1 == len(curr_word):
+                        word = curr_word
+                        found_word = True
                     else:
-                        curr_words.remove(curr_word)
-                        if len(curr_words) == 0:
-                            letter_index = 0
-                            word = ""
-            else:
-                is_start_of_match = False
-                for word_itr in words:
-                    if char == word_itr[0]:
-                        curr_words.append(word_itr)
-                        is_start_of_match = True
-
-                if is_start_of_match:
-                    letter_index = 1
-                    word = curr_words[0][0]
+                        word_search_indices[curr_word] = curr_word_idx + 1
+                elif char == curr_word[0]:
+                    word_search_indices[curr_word] = 1
+                else:
+                    word_search_indices[curr_word] = 0
+        else:
+            for word in word_search_indices:
+                word_search_indices[word] = 0
 
         if found_word:
-            char = int_map[curr_words[0]]
-            curr_words = []
-            letter_index = 0
-            word = ""
+            char = int_map[word]
 
         if found_word or char_as_int:
             if first is None:
