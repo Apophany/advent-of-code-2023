@@ -1,11 +1,13 @@
 from util import reader
 
-valid_symbols = "!@#$%^&*()_-+={}[]"
+valid_symbols = "!@#$%^&*()_-+={}[]/"
+search_offsets = [-1, 0, 1]
 
 
 def create_matrix(engine_schematic):
     matrix = []
     for line in engine_schematic:
+        line = line.replace("\n", "")
         matrix.append(list(line))
     return matrix
 
@@ -29,6 +31,8 @@ def sum_part_numbers(engine_matrix):
                 num_end_index = -1
 
         sum_parts += calc_part_value(engine_matrix, num_start_index, num_end_index, y)
+        num_start_index = -1
+        num_end_index = -1
 
     return sum_parts
 
@@ -42,14 +46,14 @@ def within_bounds(engine_matrix, y, x):
 
 
 def is_symbol_adjacent(engine_matrix, y, x):
-    offsets = [-1, 0, 1]
-    for y_offset in offsets:
-        for x_offset in offsets:
+    for y_offset in search_offsets:
+        for x_offset in search_offsets:
             curr_y = y + y_offset
             curr_x = x + x_offset
 
             if within_bounds(engine_matrix, curr_y, curr_x):
-                if engine_matrix[curr_y][curr_x] in valid_symbols:
+                val = engine_matrix[curr_y][curr_x]
+                if not val.isnumeric() and not val.isalpha() and not val == ".":
                     return True
 
     return False
@@ -95,4 +99,4 @@ def calc_part_value(engine_matrix, num_start_index, num_end_index, y):
 if __name__ == "__main__":
     puzzle_input = reader.read("resources/input.txt")
     part_numbers = sum_part_numbers(create_matrix(puzzle_input))
-    assert part_numbers == 531167
+    assert part_numbers == 550918
